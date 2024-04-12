@@ -4,11 +4,19 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
+const hbs = require('express-handlebars');
 
 
 
 var app = express();
-
+app.engine('hbs', hbs.engine({
+  extname: '.hbs',
+    defaultLayout: 'main', // Set 'main' as the default layout
+    layoutsDir: 'views/layouts', // Specify the layouts directory
+    partialsDir: 'views/partials' // Specify the partials directory
+}));
+app.set('view engine', 'hbs');
+app.set('views', 'views');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

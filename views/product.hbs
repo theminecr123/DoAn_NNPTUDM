@@ -1,0 +1,40 @@
+<body>
+    <h1>Welcome to E-commerce Store</h1>
+    <h2>Products:</h2>
+    <table id="products-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each products}}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>{{ price }}</td>
+                    <td>{{ description }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        <form method="POST" action="/cart/add">
+                            <input type="hidden" name="itemId" value="{{ _id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                        </form>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <a href="/cart">View Cart</a>
+
+    <!-- DataTables Initialization -->
+    <script>
+    $(document).ready(function() {
+        $('#products-table').DataTable(); // Initialize DataTables on the products table
+    });
+    </script>
+</body>

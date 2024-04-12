@@ -3,24 +3,33 @@ var router = express.Router();
 var responseReturn = require('../helper/ResponseHandle');
 var productModel = require('../schemas/product');
 var categoryModel = require('../schemas/category');
-router.get('/', async function (req, res, next) {
+
+router.get('/', async function(req, res, next) {
   var queries = {};
-  var arrayExclude=["limit","sort","page"];
-  for (const [key,value] of Object.entries(req.query)) {
-    if(!arrayExclude.includes(key)){
-      queries[key] = new RegExp(value,'i');
-    }
+  var arrayExclude = ["limit", "sort", "page"];
+  for (const [key, value] of Object.entries(req.query)) {
+      if (!arrayExclude.includes(key)) {
+          queries[key] = new RegExp(value, 'i');
+      }
   }
   queries.isDelete = false;
-  var page = req.query.page ? req.query.page : 1;
-  var limit = req.query.limit ? req.query.limit : 5;
-  var sort = req.query.sort?req.query.sort:{}
+
+  // Fetch products and their category details
   var products = await productModel.find(queries).populate({
-    path:'category',select:'name'
-  }).lean()
-  .skip(limit * (page - 1)).sort(sort).limit(limit).exec();
-  responseReturn.ResponseSend(res, true, 200, products)
+      path: 'category', select: 'name'
+  }).lean();
+
+  // Determine the response format based on the Accept header
+  const acceptHeader = req.headers['accept'];
+  if (acceptHeader && acceptHeader.includes('application/json')) {
+      // Return JSON response
+      res.json(products);
+  } else {
+      // Render the Handlebars view
+      res.render('product', { title: 'Ricie | Products', products: products });
+  }
 });
+
 
 router.get('/:id', async function (req, res, next) {
   try {

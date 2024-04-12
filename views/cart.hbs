@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <!-- Include CSS and JS for DataTables and jQuery -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    <table id="cart-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each cart}}
+                <tr>
+                    <td>{{name}}</td> <!-- Display the product name -->
+                    <td>${{price}}</td> <!-- Display the product price -->
+                    <td>
+                        <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}">
+                    </td>
+                    <td>
+                        <button class="remove-btn" data-item-id="{{id}}">Remove</button>
+                    </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <a href="/products">Back to Products</a>
+
+    <!-- DataTables Initialization -->
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTables
+            $('#cart-table').DataTable();
+
+            // Handle quantity update
+            $('.quantity-input').on('change', function() {
+                const itemId = $(this).data('item-id');
+                const newQuantity = $(this).val();
+
+                // AJAX request to update quantity in cart
+                $.ajax({
+                    url: '/cart/update',
+                    method: 'POST',
+                    data: {
+                        itemId: itemId,
+                        quantity: newQuantity
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        // Reload the page to update cart contents
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error updating cart:', error);
+                    }
+                });
+            });
+
+            // Handle remove item
+            $('.remove-btn').on('click', function() {
+                const itemId = $(this).data('item-id');
+
+                // AJAX request to remove item from cart
+                $.ajax({
+                    url: '/cart/remove',
+                    method: 'POST',
+                    data: {
+                        itemId: itemId
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        // Reload the page to update cart contents
+                        location.reload();
+                    },
+                    error: function(error) {
+                        console.error('Error removing item from cart:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
