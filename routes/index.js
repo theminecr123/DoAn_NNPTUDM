@@ -1,16 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var productModel = require('../schemas/product');
+const express = require('express');
+const router = express.Router();
+const productModel = require('../schemas/product');
+require('express-async-errors');
 
-router.get('/', async function(req, res, next) {
-  try {
-    // Fetch all products
-    var products = await productModel.find({}).populate('category').lean();
-    res.render('index', { title: 'Ecommerce', products: products });
-  } catch (error) {
-    // Handle error
-    next(error);
-  }
+router.get('/', async function(req, res) {
+    res.render('index', { title: 'Ricie | Home' });
 });
+
+const productRouter = require('./products');
+router.use('/products', productRouter);
+
+router.get('/products', async function(req, res) {
+    const products = await productModel.find({}).populate('category').lean();
+    res.render('product', { title: 'Ricie | Products', products: products });
+});
+
+// Include the cart route
+const cartRouter = require('./cart');
+router.use('/cart', cartRouter);
 
 module.exports = router;

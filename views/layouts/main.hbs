@@ -2,16 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{ title }}</title>
+    {{> header }} <!-- Include the header partial -->
 </head>
 <body>
-    <div class="app">
-        {{> header}}
-        <div class="container">
-            {{{body}}}
-        </div>
-        {{> footer}}
-    </div>
+    {{{body}}} <!-- This is where the page content will be inserted -->
+    {{> footer }} <!-- Optionally include a footer partial if you have one -->
 </body>
 </html>
