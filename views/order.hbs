@@ -34,27 +34,9 @@
     <button id="confirm-button">Confirm Order</button>
 
     <script>
-    function isCartEmpty() {
-            return $('.quantity-input').length === 0;
-        }
-
-        // Function to enable or disable the checkout button based on cart contents
-        function toggleCheckoutButton() {
-            const isEmpty = isCartEmpty();
-            $('#confirm-button').prop('disabled', isEmpty);
-        }
-
-        // Call toggleCheckoutButton initially to set the initial state of the button
-        toggleCheckoutButton();
-
         $(document).ready(function() {
             // Handle confirm button click
             $('#confirm-button').on('click', function() {
-                if (isCartEmpty()) {
-                    // Display an error message or handle the situation appropriately
-                    console.error('Cannot checkout: Cart is empty');
-                    return;
-                }else{
                 $.ajax({
                     url: '/order/confirm',
                     method: 'POST',
@@ -72,7 +54,7 @@
                         alert('An error occurred while confirming the order. Please try again later.');
                     }
                 });
-                }
+
                 // AJAX request to confirm the order
                 
             });

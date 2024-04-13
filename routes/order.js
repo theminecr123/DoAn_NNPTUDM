@@ -7,14 +7,8 @@ var OrderDetailModel = require('../schemas/orderdetail');
 router.get('/', async function(req, res) {
     // Fetch cart from cookies
     const cart = req.cookies.cart || {};
-    // const userId = req.user ? req.user.id : null; // Adjust as needed
 
-    // Validate the request
-    // if (!userId || Object.keys(cart).length === 0) {
-    //     return res.status(400).json({ success: false, message: 'Invalid request' });
-    // }
-
-    // Fetch cart items and total price
+    // Calculate the total price and cart items
     let totalPrice = 0;
     const cartItems = await Promise.all(
         Object.keys(cart).map(async (itemId) => {
@@ -29,10 +23,19 @@ router.get('/', async function(req, res) {
             };
         })
     );
-
-    // Render the order view with cart items and total price
-    res.render('order', { cart: cartItems, totalPrice: totalPrice.toFixed(2) });
+    
+    // Check the Accept header and respond with appropriate data
+    if (req.headers.accept && req.headers.accept.includes('application/json')) {
+        res.json({
+            success: true,
+            cartItems: cartItems,
+            totalPrice: totalPrice.toFixed(2)
+        });
+    } else {
+        res.render('order', { cart: cartItems, totalPrice: totalPrice.toFixed(2) });
+    }
 });
+
 router.post('/confirm', async function(req, res) {
     try {
         // Retrieve cart from cookies
@@ -76,8 +79,9 @@ router.post('/confirm', async function(req, res) {
         // Respond with the created order ID and success status
         res.json({
             success: true,
-            orderId: savedOrder.idOrder,
+            orderId: savedOrder._id,
         });
+
     } catch (error) {
         console.error('Error during order confirmation:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -89,6 +93,7 @@ router.get('/success', function(req, res) {
     // Render the success page
     res.render('order_success');
 });
+
 router.get('/details/:orderId', async function(req, res) {
     const orderId = req.params.orderId;
 
@@ -96,14 +101,19 @@ router.get('/details/:orderId', async function(req, res) {
         // Fetch order details for the given order ID
         const orderDetails = await OrderDetailModel.find({ idOrder: orderId }).populate('idProduct').lean();
 
-        // Respond with the order details data
-        res.json({
-            success: true,
-            orderDetails: orderDetails,
-        });
+        // Check the Accept header and respond with appropriate data
+        if (req.headers.accept && req.headers.accept.includes('application/json')) {
+            res.json({
+                success: true,
+                orderDetails: orderDetails,
+            });
+        } else {
+            res.render('order_details', { orderDetails: orderDetails });
+        }
     } catch (error) {
         console.error('Error fetching order details:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });
+
 module.exports = router;
