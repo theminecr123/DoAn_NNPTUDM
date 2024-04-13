@@ -19,4 +19,9 @@ router.get('/products', async function(req, res) {
 const cartRouter = require('./cart');
 router.use('/cart', cartRouter);
 
+
+const usersRouter = require('./users');
+app.use('/users', usersRouter);
+
+
 module.exports = router;
