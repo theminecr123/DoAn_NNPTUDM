@@ -10,11 +10,6 @@ router.get('/', async function(req, res) {
 const productRouter = require('./products');
 router.use('/products', productRouter);
 
-router.get('/products', async function(req, res) {
-    const products = await productModel.find({}).populate('category').lean();
-    res.render('product', { title: 'Ricie | Products', products: products });
-});
-
 // Include the cart route
 const cartRouter = require('./cart');
 router.use('/cart', cartRouter);

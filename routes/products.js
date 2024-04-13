@@ -14,12 +14,10 @@ router.get('/', async function(req, res, next) {
   }
   queries.isDelete = false;
 
-  // Fetch products and their category details
   var products = await productModel.find(queries).populate({
       path: 'category', select: 'name'
   }).lean();
 
-  // Determine the response format based on the Accept header
   const acceptHeader = req.headers['accept'];
   if (acceptHeader && acceptHeader.includes('application/json')) {
       // Return JSON response
