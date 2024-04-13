@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Your Cart</title>
-    <!-- Include CSS and JS for DataTables and jQuery -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </head>
+
 <body>
     <h1>Your Cart</h1>
     <table id="cart-table">
@@ -16,38 +17,86 @@
                 <th>Product Name</th>
                 <th>Price</th>
                 <th>Quantity</th>
+                <th>Total Price</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {{#each cart}}
-                <tr>
-                    <td>{{name}}</td> <!-- Display the product name -->
-                    <td>${{price}}</td> <!-- Display the product price -->
-                    <td>
-                        <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}">
-                    </td>
-                    <td>
-                        <button class="remove-btn" data-item-id="{{id}}">Remove</button>
-                    </td>
-                </tr>
+            <tr>
+                <td>{{name}}</td>
+                <td>${{price}}</td>
+                <td>
+                    <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}" data-price="{{price}}">
+                </td>
+                <td class="item-total-price">${{totalPrice}}</td>
+                <td>
+                    <button class="remove-btn" data-item-id="{{id}}">Remove</button>
+                </td>
+            </tr>
             {{/each}}
         </tbody>
+        <tr>
+            <td colspan="3">Grand Total:</td>
+            <td id="grand-total">${{grandTotal}}</td>
+            <td></td>
+        </tr>
     </table>
+
+    <button id="checkout-button" style="display: none;">Checkout</button>
     <a href="/products">Back to Products</a>
 
-    <!-- DataTables Initialization -->
     <script>
         $(document).ready(function() {
-            // Initialize DataTables
+            function calculateItemTotalPrice() {
+                $('.quantity-input').each(function() {
+                    const price = parseFloat($(this).data('price'));
+                    const quantity = parseInt($(this).val());
+                    const totalPrice = price * quantity;
+                    $(this).closest('tr').find('.item-total-price').text(`$${totalPrice.toFixed(2)}`);
+                });
+            }
+
+            function updateTotals() {
+                $.ajax({
+                    url: '/cart/get-totals',
+                    method: 'GET',
+                    success: function(response) {
+                        for (const item of response.items) {
+                            const itemRow = $(`tr[data-item-id='${item.id}']`);
+                            itemRow.find('.item-total-price').text(`$${item.totalPrice.toFixed(2)}`);
+                        }
+                        $('#grand-total').text(`$${response.grandTotal.toFixed(2)}`);
+                        toggleCheckoutButtonVisibility();
+                    },
+                    error: function(error) {
+                        console.error('Error fetching totals:', error);
+                    }
+                });
+            }
+
+            function isCartEmpty() {
+                return $('.quantity-input').length === 0;
+            }
+
+            function toggleCheckoutButtonVisibility() {
+                if (isCartEmpty()) {
+                    $('#checkout-button').hide();
+                } else {
+                    $('#checkout-button').show();
+                }
+            }
+
+            updateTotals();
+            calculateItemTotalPrice();
             $('#cart-table').DataTable();
 
-            // Handle quantity update
             $('.quantity-input').on('change', function() {
                 const itemId = $(this).data('item-id');
                 const newQuantity = $(this).val();
-
-                // AJAX request to update quantity in cart
+                const price = $(this).data('price');
+                const newItemTotalPrice = newQuantity * price;
+                $(this).closest('tr').find('.item-total-price').text(`$${newItemTotalPrice.toFixed(2)}`);
                 $.ajax({
                     url: '/cart/update',
                     method: 'POST',
@@ -56,9 +105,8 @@
                         quantity: newQuantity
                     },
                     success: function(response) {
-                        // Handle success response
-                        // Reload the page to update cart contents
-                        location.reload();
+                        $('#grand-total').text(`$${response.grandTotal.toFixed(2)}`);
+                        toggleCheckoutButtonVisibility();
                     },
                     error: function(error) {
                         console.error('Error updating cart:', error);
@@ -66,11 +114,8 @@
                 });
             });
 
-            // Handle remove item
             $('.remove-btn').on('click', function() {
                 const itemId = $(this).data('item-id');
-
-                // AJAX request to remove item from cart
                 $.ajax({
                     url: '/cart/remove',
                     method: 'POST',
@@ -78,16 +123,20 @@
                         itemId: itemId
                     },
                     success: function(response) {
-                        // Handle success response
-                        // Reload the page to update cart contents
                         location.reload();
+                        toggleCheckoutButtonVisibility();
                     },
                     error: function(error) {
                         console.error('Error removing item from cart:', error);
                     }
                 });
             });
+
+            $('#checkout-button').on('click', function() {
+                window.location.href = '/order/checkout';
+            });
         });
     </script>
 </body>
+
 </html>
