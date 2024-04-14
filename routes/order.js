@@ -32,7 +32,7 @@ router.get('/', async function(req, res) {
             totalPrice: totalPrice.toFixed(2)
         });
     } else {
-        res.render('order', { cart: cartItems, totalPrice: totalPrice.toFixed(2) });
+        res.render('checkout/order', { cart: cartItems, totalPrice: totalPrice.toFixed(2) });
     }
 });
 
@@ -40,7 +40,7 @@ router.post('/confirm', async function(req, res) {
     try {
         // Retrieve cart from cookies
         const cart = req.cookies.cart || {};
-        
+
         // Calculate the total amount
         let total = 0;
         const orderDetails = [];
@@ -53,13 +53,14 @@ router.post('/confirm', async function(req, res) {
                     idProduct: itemId,
                     quantity: quantity,
                 });
+                // Reduce the quantity of the product in the database
+                product.quantity -= quantity;
+                await product.save(); // Save the updated product
             }
         }
 
         // Create a new order
         const newOrder = new OrderModel({
-            // Uncomment and update to set the idUser if needed
-            // idUser: req.user ? req.user.id : null,
             total: total,
             dateCreated: new Date(),
         });
@@ -89,9 +90,10 @@ router.post('/confirm', async function(req, res) {
 });
 
 
+
 router.get('/success', function(req, res) {
     // Render the success page
-    res.render('order_success');
+    res.render('checkout/order_success');
 });
 
 router.get('/details/:orderId', async function(req, res) {
@@ -108,7 +110,7 @@ router.get('/details/:orderId', async function(req, res) {
                 orderDetails: orderDetails,
             });
         } else {
-            res.render('order_details', { orderDetails: orderDetails });
+            res.render('checkout/order_details', { orderDetails: orderDetails });
         }
     } catch (error) {
         console.error('Error fetching order details:', error);

@@ -7,6 +7,7 @@ var categoryModel = require('../schemas/category');
 var multer = require('multer');
 
 
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
       cb(null, 'uploads/') // Specify the directory where files will be saved
@@ -22,6 +23,8 @@ var upload = multer({ storage: storage });
 const productsPerPage = 10; // 2 rows * 5 products per row
 
 router.get('/', async function(req, res, next) {
+  const user = req.session.user;
+
     // Query handling for filtering
     const queries = {};
     const arrayExclude = ['limit', 'sort', 'page'];
@@ -53,7 +56,7 @@ router.get('/', async function(req, res, next) {
         res.json(products);
     } else {
         // Render the Handlebars view with products, pagination data, and title
-        res.render('product', {
+        res.render('product/product', {
             title: 'Ricie | Products',
             products: products,
             currentPage: currentPage,
@@ -71,7 +74,7 @@ router.get('/add', async function(req, res) {
       const categories = await categoryModel.find().lean();
 
       // Render the 'addproduct' view with the categories data
-      res.render('addproduct', { categories });
+      res.render('product/addproduct', { categories });
   } catch (error) {
       console.error('Error fetching categories:', error);
       res.status(500).json({ success: false, message: 'Internal server error' });
@@ -79,14 +82,28 @@ router.get('/add', async function(req, res) {
 });
 
 
-router.get('/:id', async function (req, res, next) {
+router.get('/:id', async function(req, res, next) {
   try {
-    let product = await productModel.find({ _id: req.params.id });
-    responseReturn.ResponseSend(res, true, 200, product)
+      // Fetch the product by its ID
+      let product = await productModel.findOne({ _id: req.params.id })
+          .populate({ path: 'category', select: 'name' }) // Populate category information
+          .lean();
+
+      // Check the Accept header for the request format
+      const acceptHeader = req.headers['accept'];
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+          // Return JSON response
+          responseReturn.ResponseSend(res, true, 200, product);
+      } else {
+          // Render the Handlebars view for product detail
+          res.render('product/detailproduct', { product: product });
+      }
   } catch (error) {
-    responseReturn.ResponseSend(res, false, 404, error)
+      console.error('Error fetching product:', error);
+      responseReturn.ResponseSend(res, false, 404, error);
   }
 });
+
 
 
 
@@ -146,20 +163,67 @@ router.post('/', upload.single('image'), async function(req, res) {
 });
 
 
-
-
-
-router.put('/:id', async function (req, res, next) {
+router.get('/edit/:id', async function(req, res) {
   try {
-    let product = await productModel.findByIdAndUpdate(req.params.id, req.body,
-      {
-        new: true
-      });
-    responseReturn.ResponseSend(res, true, 200, product)
+      // Fetch the product by its ID
+      let product = await productModel.findOne({ _id: req.params.id })
+          .populate({ path: 'category', select: 'name' }) // Populate category information
+          .lean();
+
+      // Fetch all categories to populate the category dropdown
+      let categories = await categoryModel.find().lean();
+
+      // Render the Handlebars view for editing the product
+      res.render('product/editproduct', { product: product, categories: categories });
   } catch (error) {
-    responseReturn.ResponseSend(res, true, 404, error)
+      console.error('Error fetching product:', error);
+      res.status(404).json({ success: false, message: error.message });
   }
-})
+});
+
+
+
+
+router.post('/:id', upload.single('image'), async function (req, res) {
+  try {
+      // Update the product using the form data and uploaded image file
+      const updatedProduct = await productModel.findByIdAndUpdate(
+          req.params.id, // ID of the product to update
+          {
+              name: req.body.name,
+              price: req.body.price,
+              quantity: req.body.quantity,
+              description: req.body.description,
+              category: req.body.category,
+              thumbnail: req.file ? req.file.path : req.body.thumbnail // Check if file is provided or retain existing thumbnail
+          },
+          { new: true } // Return the updated product
+      );
+
+      // Check the Accept header in the request
+      const acceptHeader = req.headers['accept'];
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+          // Return JSON response
+          res.json({ success: true, message: 'Product updated successfully.', product: updatedProduct });
+      } else {
+          // Redirect the user back to the product list page
+          res.redirect('/products');
+      }
+  } catch (error) {
+      console.error('Error updating product:', error);
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+          // Return JSON error response
+          res.status(500).json({ success: false, message: error.message });
+      } else {
+          // Use responseReturn to send error response in other formats (e.g., HTML)
+          responseReturn.ResponseSend(res, false, 500, error.message);
+      }
+  }
+});
+
+
+
+
 router.delete('/:id', async function (req, res, next) {
   try {
     let product = await productModel.findByIdAndUpdate(req.params.id, {

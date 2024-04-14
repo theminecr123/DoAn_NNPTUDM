@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link rel="stylesheet" href="/path/to/your/css/styles.css">
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .products-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+            text-align: center;
+            height: 350px; /* Adjust as needed for consistent card height */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space out content evenly */
+        }
+
+        .product-image {
+            max-width: 100%;
+            height: 200px; /* Fixed height for images */
+            object-fit: cover; /* Ensures images fit within the fixed height */
+            border-radius: 5px;
+            margin-bottom: 10px; /* Add some space between image and text */
+        }
+
+        .product-name {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            overflow: hidden; /* Prevent text overflow */
+            text-overflow: ellipsis; /* Truncate text with ellipsis */
+            white-space: nowrap; /* Keep text in a single line */
+        }
+
+        .product-price {
+            margin: 5px 0;
+            font-size: 14px;
+            color: green;
+        }
+
+        .add-to-cart-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Style for the "View Cart" link */
+        .view-cart-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .view-cart-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Pagination controls */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 12px;
+            margin: 0 4px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: black;
+            border: 1px solid #ccc;
+        }
+
+        .pagination a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .pagination .active {
+            background-color: #007BFF;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Welcome to E-commerce Store</h1>
+    <h2>Products:</h2>
+
+    <button onclick="window.location.href='/products/add';" style="margin-bottom: 20px; padding: 8px 12px; border-radius: 5px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
+        Add New Product
+    </button>
+
+    <div class="products-container">
+        {{#each products}}
+            <div class="product-card">
+                <!-- Add a link to navigate to the product details page when the image is clicked -->
+                <a href="/products/{{_id}}" style="display: block;">
+                    <img src="{{ thumbnail }}" alt="{{ name }}" class="product-image">
+                </a>
+                <div class="product-name">{{ name }}</div>
+                <div class="product-price">{{ price }}</div>
+                <form method="POST" action="/cart/add">
+                    <input type="hidden" name="itemId" value="{{ _id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+                </form>
+
+                <!-- Add buttons for Update and Delete -->
+                <div class="product-actions">
+                    <!-- Update button -->
+                    <button onclick="window.location.href='/products/edit/{{_id}}';" class="update-btn" style="margin-top: 10px; padding: 5px 10px; border-radius: 5px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
+                        Update
+                    </button>
+
+                    <!-- Delete button -->
+                    <button onclick="confirmDelete('{{_id}}')" class="delete-btn" style="margin-top: 10px; padding: 5px 10px; border-radius: 5px; background-color: #FF0000; color: white; border: none; cursor: pointer;">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+
+    <a href="/cart" class="view-cart-link">View Cart</a>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        {{#if prevPage}}
+            <a href="/products?page={{ prevPage }}">Previous</a>
+        {{/if}}
+        {{#each (range 1 totalPages)}}
+            <a href="/products?page={{this}}" class="{{#ifEquals this currentPage}}active{{/ifEquals}}">{{this}}</a>
+        {{/each}}
+        {{#if nextPage}}
+            <a href="/products?page={{ nextPage }}">Next</a>
+        {{/if}}
+    </div>
+</body>
+
+</html>
+
+<script>
+    function confirmDelete(productId) {
+        const confirmation = confirm('Are you sure you want to delete this product?');
+        if (confirmation) {
+            // Send a DELETE request to the server
+            fetch(`/products/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    // Reload the page after successful deletion
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete the product. Please try again.');
+                }
+            });
+        }
+    }
+</script>

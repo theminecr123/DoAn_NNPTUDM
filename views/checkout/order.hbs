@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Order Details</title>
+    <!-- Include CSS and jQuery -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+
+    <!-- Add custom styles -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #confirm-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #confirm-button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Order Details</h1>
+    <table id="order-table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each cart}}
+            <tr>
+                <td>{{name}}</td>
+                <td>${{price}}</td>
+                <td>{{quantity}}</td>
+                <td>${{totalPrice}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <p>Total Price: ${{totalPrice}}</p>
+    <button id="confirm-button">Confirm Order</button>
+
+    <script>
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#order-table').DataTable();
+
+            // Handle confirm button click
+            $('#confirm-button').on('click', function() {
+                $.ajax({
+                    url: '/order/confirm',
+                    method: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            // Redirect to order success page
+                            window.location.href = '/order/success';
+                        } else {
+                            console.error('Error confirming order:', response.message);
+                            alert('Error confirming order: ' + response.message);
+                        }
+                    },
+                    error: function(error) {
+                        console.error('Error confirming order:', error);
+                        alert('An error occurred while confirming the order. Please try again later.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

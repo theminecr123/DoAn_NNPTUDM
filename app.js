@@ -5,8 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 const hbs = require('express-handlebars');
+const session = require('express-session');
 
 var app = express();
+
 
 // Define the range function
 function range(start, end) {

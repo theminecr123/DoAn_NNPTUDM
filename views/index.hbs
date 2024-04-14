@@ -25,19 +25,5 @@
        }
     </style>
 </head>
-<body>
-    <h1>Trang Home</h1>
-    {{#if user}}
-        <div class="user-info">
-            <p>Xin chào {{ user.name }} ({{ user.email }})</p>
-        </div>
-        <div class="logout-button">
-            <a href="/users/logout">Đăng xuất</a>
-        </div>
-    {{else}}
-        <div class="login-button">
-            <a href="/users/login">Đăng nhập</a>
-        </div>
-    {{/if}}
-</body>
+
 </html>
