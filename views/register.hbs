@@ -10,24 +10,95 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 70vh;
+            height: 60vh; 
+            font-size: 1.5em;
+            border: 2px solid #ccc; /* Đặt đường viền cho form */
+            border-radius: 10px; /* Bo tròn viền form */
+            padding: 20px; /* Thêm khoảng cách giữa nội dung và viền form */
+            max-width: 400px;
+            margin: auto;
+        }
+        h1{
+            text-align: center;
+            font-size: 50px; 
+        }
+        .error-message {
+            color: red;
         }
 
         input, button {
-            margin: 5px;
+            margin: 2px;
+            font-size: 20px; 
+            border: 1px solid #ccc; /* Đặt đường viền cho các trường nhập */
+            border-radius: 5px; /* Bo tròn viền cho các trường nhập */
+            padding: 8px; /* Thêm khoảng cách giữa nội dung và viền cho các trường nhập */
+        }
+
+        .error {
+            color: red;
+            font-size: 0.5em;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Register</h1>
-    <form action="/register" method="POST">
-        <input type="text" name="name" placeholder="Name" required><br>
-        <input type="email" name="email" placeholder="Email" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <input type="password" name="confirmPassword" placeholder="Confirm Password" required><br>
-        <input type="text" name="phone" placeholder="Phone" required><br>
+    <form id="registerForm" action="/users/register" method="POST">
+        <input type="text" name="name" id="name" placeholder="Name" required><span class="error" id="nameError"></span><br>
+        <input type="text" name="email" id="email" placeholder="Email" required><span class="error" id="emailError"></span><br>
+        <input type="password" name="password" id="password" placeholder="Password" required><span class="error" id="passwordError"></span><br>
+        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" required><span class="error" id="confirmPasswordError"></span><br>
+        <input type="tel" name="phone" id="phone" placeholder="Phone" required><span class="error" id="phoneError"></span><br>
         <input type="text" name="address" placeholder="Address"><br>
-        <button type="submit">Register</button>
+        <button type="submit" id="submitButton">Register</button>
     </form>
+     <script>
+        // Xóa thông báo lỗi khi người dùng bắt đầu nhập liệu vào trường đó
+        document.querySelectorAll("input").forEach(function(input) {
+            input.addEventListener("input", function() {
+                this.nextElementSibling.textContent = "";
+            });
+        });
+
+        document.getElementById("registerForm").addEventListener("submit", function(event) {
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var confirmPassword = document.getElementById("confirmPassword").value;
+            var phone = document.getElementById("phone").value;
+
+            // Biểu thức chính quy để kiểm tra định dạng email
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            var phoneRegex = /^[0-9]{10}$/;
+
+            // Biến để kiểm tra xem có lỗi hay không
+            var hasError = false;
+
+            // Xóa thông báo lỗi cũ
+            var errorElements = document.getElementsByClassName("error");
+            for (var i = 0; i < errorElements.length; i++) {
+                errorElements[i].textContent = "";
+            }
+
+            // Kiểm tra từng trường và hiển thị thông báo lỗi nếu cần
+            if (!emailRegex.test(email)) { 
+                document.getElementById("emailError").textContent = "Email không đúng định dạng";
+                hasError = true;
+            }
+            if (password !== confirmPassword) {
+                document.getElementById("confirmPasswordError").textContent = "Mật khẩu và xác nhận mật khẩu không khớp";
+                hasError = true;
+            }
+            if (!phoneRegex.test(phone)) {
+                document.getElementById("phoneError").textContent = "Số điện thoại phải là 10 số";
+                hasError = true;
+            }
+
+            // Nếu có lỗi, ngăn chặn gửi form
+            if (hasError) {
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
