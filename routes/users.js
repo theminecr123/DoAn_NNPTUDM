@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../schemas/user');
-const bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
+
 
 
 
