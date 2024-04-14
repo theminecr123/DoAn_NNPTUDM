@@ -1,93 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Your Cart</title>
-    <!-- Include CSS and JS for DataTables and jQuery -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="/path/to/your/css/styles.css">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* Cart container styles */
+        .cart-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 10px; /* Space between items */
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* Cart item card styles */
+        .cart-item-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Image styling */
+        .cart-item-card img {
+            max-width: 100%;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        /* Price and total styling */
+        .cart-item-card .price, .cart-item-card .total {
+            font-size: 14px;
+        }
+
+        /* Quantity input */
+        .cart-item-card input {
+            width: 50px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* Remove button */
+        .remove-btn {
+            background-color: #ff6347; /* Tomato red */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background-color: #ff4500;
+        }
+
+        /* Grand total and checkout button styles */
+        .checkout-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .checkout-section #grand-total {
+            font-size: 18px;
+        }
+
+        #checkout-button {
+            background-color: #4caf50; /* Green */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #checkout-button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Your Cart</h1>
-    <table id="cart-table">
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each cart}}
-                <tr>
-                    <td>{{name}}</td> <!-- Display the product name -->
-                    <td>${{price}}</td> <!-- Display the product price -->
-                    <td>
-                        <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}">
-                    </td>
-                    <td>
-                        <button class="remove-btn" data-item-id="{{id}}">Remove</button>
-                    </td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
+
+    <div class="cart-container">
+        {{#each cart}}
+            <div class="cart-item-card" data-item-id="{{id}}">
+                <img src="{{image}}" alt="{{name}}">
+                <div>{{name}}</div>
+                <div class="price">${{price}}</div>
+                <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}">
+                <div class="total">${{totalPrice}}</div>
+                <button class="remove-btn" data-item-id="{{id}}">Remove</button>
+            </div>
+        {{/each}}
+    </div>
+
+    <div class="checkout-section">
+        <div id="grand-total">Grand Total: ${{grandTotal}}</div>
+        <button id="checkout-button">Checkout</button>
+    </div>
+
     <a href="/products">Back to Products</a>
 
-    <!-- DataTables Initialization -->
     <script>
-        $(document).ready(function() {
-            // Initialize DataTables
-            $('#cart-table').DataTable();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Calculate total for each cart item
+            function calculateItemTotalPrice() {
+                document.querySelectorAll('.quantity-input').forEach(function(input) {
+                    const price = parseFloat(input.dataset.price);
+                    const quantity = parseInt(input.value);
+                    const totalPrice = price * quantity;
+                    const itemCard = input.closest('.cart-item-card');
+                    itemCard.querySelector('.total').textContent = `$${totalPrice.toFixed(2)}`;
+                });
+            }
 
-            // Handle quantity update
-            $('.quantity-input').on('change', function() {
-                const itemId = $(this).data('item-id');
-                const newQuantity = $(this).val();
-
-                // AJAX request to update quantity in cart
+            // Update totals and grand total
+            function updateTotals() {
                 $.ajax({
-                    url: '/cart/update',
-                    method: 'POST',
-                    data: {
-                        itemId: itemId,
-                        quantity: newQuantity
-                    },
+                    url: '/cart/get-totals',
+                    method: 'GET',
                     success: function(response) {
-                        // Handle success response
-                        // Reload the page to update cart contents
-                        location.reload();
+                        response.items.forEach(item => {
+                            const itemCard = document.querySelector(`.cart-item-card[data-item-id='${item.id}']`);
+                            itemCard.querySelector('.total').textContent = `$${item.totalPrice.toFixed(2)}`;
+                        });
+                        document.getElementById('grand-total').textContent = `Grand Total: $${response.grandTotal.toFixed(2)}`;
                     },
                     error: function(error) {
-                        console.error('Error updating cart:', error);
+                        console.error('Error fetching totals:', error);
                     }
+                });
+            }
+
+            // Event listener for quantity input change
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const itemId = input.dataset.itemId;
+                    const newQuantity = input.value;
+                    $.ajax({
+                        url: '/cart/update',
+                        method: 'POST',
+                        data: {
+                            itemId: itemId,
+                            quantity: newQuantity
+                        },
+                        success: function(response) {
+                            calculateItemTotalPrice();
+                            updateTotals();
+                        },
+                        error: function(error) {
+                            console.error('Error updating cart:', error);
+                        }
+                    });
                 });
             });
 
-            // Handle remove item
-            $('.remove-btn').on('click', function() {
-                const itemId = $(this).data('item-id');
-
-                // AJAX request to remove item from cart
-                $.ajax({
-                    url: '/cart/remove',
-                    method: 'POST',
-                    data: {
-                        itemId: itemId
-                    },
-                    success: function(response) {
-                        // Handle success response
-                        // Reload the page to update cart contents
-                        location.reload();
-                    },
-                    error: function(error) {
-                        console.error('Error removing item from cart:', error);
-                    }
+            // Event listener for remove button click
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemId = button.dataset.itemId;
+                    $.ajax({
+                        url: '/cart/remove',
+                        method: 'POST',
+                        data: {
+                            itemId: itemId
+                        },
+                        success: function(response) {
+                            location.reload();
+                        },
+                        error: function(error) {
+                            console.error('Error removing item from cart:', error);
+                        }
+                    });
                 });
             });
+
+            // Event listener for checkout button click
+            document.getElementById('checkout-button').addEventListener('click', function() {
+                window.location.href = '/order';
+            });
+
+            // Initial calculations and totals update
+            calculateItemTotalPrice();
+            updateTotals();
         });
     </script>
 </body>
+
 </html>

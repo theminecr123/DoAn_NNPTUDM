@@ -2,26 +2,21 @@ var express = require('express');
 var router = express.Router();
 var productModel = require('../schemas/product');
 
-router.get('/', async function(req, res, next) {
-    // Fetch cart from cookies
+router.get('/', async (req, res) => {
     const cart = req.cookies.cart || {};
-    console.log("Cart data:", cart);
-
-    // Fetch product details for items in the cart
     const cartItems = await Promise.all(
         Object.keys(cart).map(async (itemId) => {
             const product = await productModel.findById(itemId).lean();
             return {
                 id: itemId,
                 name: product.name,
+                image: product.thumbnail,
                 price: product.price,
                 quantity: cart[itemId],
             };
         })
     );
-    console.log("Cart items:", cartItems);
 
-    // Check accept header and return appropriate response
     const acceptHeader = req.headers['accept'];
     if (acceptHeader && acceptHeader.includes('application/json')) {
         res.json(cartItems);
@@ -30,32 +25,50 @@ router.get('/', async function(req, res, next) {
     }
 });
 
+router.get('/get-totals', async (req, res) => {
+    try {
+        const cart = req.cookies.cart || {};
+        let grandTotal = 0;
+        const items = [];
+        
+        for (const itemId in cart) {
+            const quantity = cart[itemId];
+            const product = await productModel.findById(itemId);
+            
+            if (product) {
+                const totalPrice = quantity * product.price;
+                grandTotal += totalPrice;
+                items.push({ id: itemId, totalPrice });
+            }
+        }
+        
+        res.json({ grandTotal, items });
+    } catch (error) {
+        console.error('Error fetching totals:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
 
-router.post('/add', function(req, res) {
+router.post('/add', (req, res) => {
     const itemId = req.body.itemId;
     const quantity = parseInt(req.body.quantity, 10) || 1;
-
-    // Retrieve the cart from cookies or create a new cart object
     let cart = req.cookies.cart || {};
 
-    // Add the item to the cart or update the quantity
     if (cart[itemId]) {
         cart[itemId] += quantity;
     } else {
         cart[itemId] = quantity;
     }
 
-    // Save the cart back to the cookies
     res.cookie('cart', cart);
 
-    // Check accept header and return appropriate response
     const acceptHeader = req.headers['accept'];
     if (acceptHeader && acceptHeader.includes('application/json')) {
         res.status(200).json({
             code: 200,
             result: {
                 message: 'Item added to cart successfully',
-                cart: cart
+                cart
             }
         });
     } else {
@@ -63,15 +76,10 @@ router.post('/add', function(req, res) {
     }
 });
 
-
-router.post('/remove', function(req, res) {
+router.post('/remove', (req, res) => {
     const itemId = req.body.itemId;
-
-    // Retrieve the cart from cookies
     let cart = req.cookies.cart || {};
 
-    // Remove the item from the cart
-    let message;
     if (cart[itemId]) {
         delete cart[itemId];
         message = 'Item removed from cart successfully';
@@ -79,22 +87,37 @@ router.post('/remove', function(req, res) {
         message = 'Item not found in cart';
     }
 
-    // Save the updated cart back to the cookies
     res.cookie('cart', cart);
 
-    // Check accept header and return appropriate response
     const acceptHeader = req.headers['accept'];
     if (acceptHeader && acceptHeader.includes('application/json')) {
         res.status(200).json({
             code: 200,
             result: {
-                message: message,
-                cart: cart
+                message,
+                cart
             }
         });
     } else {
         res.redirect('/cart');
     }
+});
+
+router.post('/update', async (req, res) => {
+    const itemId = req.body.itemId;
+    const quantity = parseInt(req.body.quantity, 10);
+    let cart = req.cookies.cart || {};
+
+    cart[itemId] = quantity;
+    res.cookie('cart', cart);
+
+    let grandTotal = 0;
+    for (let id in cart) {
+        const product = await productModel.findById(id).lean();
+        grandTotal += product.price * cart[id];
+    }
+
+    res.json({ grandTotal });
 });
 
 module.exports = router;
