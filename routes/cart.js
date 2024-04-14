@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
             return {
                 id: itemId,
                 name: product.name,
+                image: product.thumbnail,
                 price: product.price,
                 quantity: cart[itemId],
             };
