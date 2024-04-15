@@ -49,17 +49,22 @@ router.get('/', async function (req, res, next) {
       .skip(skip)
       .limit(productsPerPage)
       .lean();
-  
-    // Render the Handlebars view with products, pagination data, user role, and title
-    res.render('product/product', {
-      title: 'Ricie | Products',
-      products: products,
-      currentPage: currentPage,
-      totalPages: totalPages,
-      prevPage: currentPage > 1 ? currentPage - 1 : null,
-      nextPage: currentPage < totalPages ? currentPage + 1 : null,
-      userRole: userRole // Pass userRole to the view
-    });
+      const acceptHeader = req.headers['accept'];
+      if (acceptHeader && acceptHeader.includes('application/json')) {
+          // Return JSON response
+          res.json(products);
+      } else {
+        // Render the Handlebars view with products, pagination data, user role, and title
+        res.render('product/product', {
+        title: 'Ricie | Products',
+        products: products,
+        currentPage: currentPage,
+        totalPages: totalPages,
+        prevPage: currentPage > 1 ? currentPage - 1 : null,
+        nextPage: currentPage < totalPages ? currentPage + 1 : null,
+        userRole: userRole // Pass userRole to the view
+        });
+    }
   });
 
 
