@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
     if (acceptHeader && acceptHeader.includes('application/json')) {
         res.json(cartItems);
     } else {
-        res.render('cart', { cart: cartItems, title: 'Your Cart' });
+        res.render('checkout/cart', { cart: cartItems, title: 'Your Cart' });
     }
 });
 

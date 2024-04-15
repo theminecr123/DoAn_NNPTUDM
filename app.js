@@ -3,11 +3,13 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-const hbs = require('express-handlebars');
+const  = require('express-handlebars');
 const cookieParser = require('cookie-parser');
+
 var app = express();
 
 app.use(cookieParser());
+
 
 // Define the range function
 function range(start, end) {

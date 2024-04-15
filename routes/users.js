@@ -20,7 +20,7 @@ router.get('/register', function(req, res) {
 
 router.post('/register', async function(req, res, next) {
     try {
-        const { name, email, password, confirmPassword, role, phone, address } = req.body;
+        const { name, email, password, confirmPassword,role, phone, address } = req.body;
 
         // Kiểm tra xem mật khẩu và xác nhận mật khẩu có khớp nhau không
         if (password !== confirmPassword) {
@@ -38,6 +38,7 @@ router.post('/register', async function(req, res, next) {
         const newUser = new User({
             name,
             email,
+            role,
             password: hashedPassword,
             role,
             phone,

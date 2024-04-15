@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{product.name}} - Product Detail</title>
+    <link rel="stylesheet" href="/path/to/your/css/styles.css">
+    <style>
+        /* Add your custom styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Styling for the product image */
+        img {
+            max-width: 100%;
+            height: 300px; /* Set a fixed height for the image */
+            object-fit: cover; /* Maintain aspect ratio */
+            border-radius: 5px;
+            margin-bottom: 20px; /* Add some space between image and text */
+        }
+
+        /* Styling for headings */
+        h1, h2, p {
+            margin-bottom: 10px;
+        }
+
+        /* Styling for buttons */
+        .add-to-cart-btn, .back-button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .add-to-cart-btn:hover, .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Styling for product information */
+        .product-info {
+            margin-bottom: 20px; /* Add some space between sections */
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/products" class="back-button" style="margin-bottom: 20px;">Back to Products</a>
+
+    <div class="container">
+        <!-- Product name as heading -->
+        <h1>{{product.name}}</h1>
+
+        <!-- Display product thumbnail if it exists -->
+        {{#if product.thumbnail}}
+            <img src="/{{product.thumbnail}}" alt="{{product.name}}">
+        {{/if}}
+
+        <!-- Product details -->
+        <div class="product-info">
+            <h2>Price: ${{product.price}}</h2>
+            <p>Quantity: {{product.quantity}}</p>
+            <p>Description: {{product.description}}</p>
+            <p>Category: {{product.category.name}}</p>
+        </div>
+
+        <!-- Add to Cart button -->
+        <form method="POST" action="/cart/add">
+            <input type="hidden" name="itemId" value="{{product._id}}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+        </form>
+    </div>
+</body>
+
+</html>
