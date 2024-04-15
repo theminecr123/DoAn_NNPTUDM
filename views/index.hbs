@@ -8,22 +8,74 @@
        h1 {
             text-align: center;
        }
-       .login-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-       }
        .user-info {
             position: absolute;
             top: 20px;
-            right: 100px; /* Điều chỉnh khoảng cách giữa thông tin người dùng và nút */
+            right: 100px; 
        }
-       .logout-button {
+       .logout-button,
+       .login-button {
+            margin-top: 20px;
             position: absolute;
-            top: 70px; /* Điều chỉnh vị trí xuống dưới so với thông tin người dùng */
+            top: 50px; 
             right: 100px;
+            display: none;
        }
     </style>
 </head>
+<body>
+    <h1>Trang Home</h1>
+    <div class="user-info" id="user-info">
+        <!-- Thông tin người dùng sẽ được thêm vào đây -->
+    </div>
+    <button class="logout-button" id="logout-button">Đăng xuất</button>
+    <button class="login-button" id="login-button">Đăng nhập</button>
+    <button class="profile-button" id="profile-button">Thông tin người dùng</button>
+    <script>
+        const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*=\s*([^;]*).*$)|^.*$/, "$1");
+        
+        // Kiểm tra nếu userIdCookie tồn tại, người dùng đã đăng nhập
+        if (userIdCookie) {
+            const logoutButton = document.querySelector('.logout-button');
+            const loginButton = document.querySelector('.login-button');
+            logoutButton.style.display = 'block'; // Hiển thị nút đăng xuất
+            loginButton.style.display = 'none'; // Ẩn nút đăng nhập
+            // Fetch thông tin người dùng
+            fetch('/users/' + userIdCookie)
+                .then(response => response.json())
+                .then(data => {
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.innerHTML = `<p>Xin chào ${data.name} (${data.email})</p>`;
+                })
+                .catch(error => console.error('Lỗi:', error));
+        } else { // Ngược lại, người dùng chưa đăng nhập
+            const logoutButton = document.querySelector('.logout-button');
+            const loginButton = document.querySelector('.login-button');
+            logoutButton.style.display = 'none'; // Ẩn nút đăng xuất
+            loginButton.style.display = 'block'; // Hiển thị nút đăng nhập
+        }
+
+        // Xử lý sự kiện khi nhấn nút đăng xuất
+        document.getElementById('logout-button').addEventListener('click', function() {
+            fetch('/users/logout')
+                .then(() => {
+                    // Sau khi đăng xuất, chuyển hướng về trang chủ
+                    window.location.href = '/';
+                })
+                .catch(error => console.error('Lỗi:', error));
+        });
+
+        // Xử lý sự kiện khi nhấn nút đăng nhập
+        document.getElementById('login-button').addEventListener('click', function() {
+            // Chuyển hướng đến trang đăng nhập
+            window.location.href = '/users/login';
+        });
+
+        document.getElementById('profile-button').addEventListener('click', function() {
+            // Chuyển hướng đến trang đăng nhập
+            window.location.href = '/users/profile';
+        });
+    </script>
+</body>
 
 </html>
