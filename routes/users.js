@@ -5,8 +5,6 @@ const User = require('../schemas/user');
 var bcrypt = require('bcryptjs');
 
 
-
-
 router.get('/', async function(req, res) {
     try {
         const users = await User.find();
@@ -16,14 +14,13 @@ router.get('/', async function(req, res) {
     }
 });
 
-
 router.get('/register', function(req, res) {
     res.render('register', { title: 'Register' });
 });
 
 router.post('/register', async function(req, res, next) {
     try {
-        const { name, email, password, confirmPassword, phone, address } = req.body;
+        const { name, email, password, confirmPassword, role, phone, address } = req.body;
 
         // Kiểm tra xem mật khẩu và xác nhận mật khẩu có khớp nhau không
         if (password !== confirmPassword) {
@@ -42,6 +39,7 @@ router.post('/register', async function(req, res, next) {
             name,
             email,
             password: hashedPassword,
+            role,
             phone,
             address
         });
@@ -49,7 +47,8 @@ router.post('/register', async function(req, res, next) {
         // Lưu người dùng vào cơ sở dữ liệu
         await newUser.save();
         console.log("Đăng ký thành công")
-        res.redirect('/');
+        //console.log(newUser);
+        res.redirect('/users/login');
     } catch (error) {
         next(error);
     }
@@ -76,25 +75,54 @@ router.post('/login', async function(req, res, next) {
         }
 
         // Đăng nhập thành công
-        // Thiết lập session cho người dùng
-        req.session.user = user;
-        console.log(user);
-
-        res.redirect('/');
+       // Lưu ID của người dùng vào cookie
+       res.cookie('userId', user._id, { maxAge: 900000 });
+       res.redirect('/');
     } catch (error) {
         next(error);
     }
 });
 
 router.get('/logout', function(req, res) {
-    // Xóa session người dùng khi đăng xuất
-    req.session.destroy(function(err) {
-        if (err) {
-            return res.status(500).send("Error logging out");
-        }
-        res.redirect('/');
-    });
+    // Xóa cookie userId
+    res.clearCookie('userId');
+    res.redirect('/');
 });
 
+router.get('/profile', async function(req, res, next) {
+    try {
+        const userId = req.cookies.userId;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).send("Không tìm thấy người dùng");
+        }
+        
+        // Render trang thông tin cá nhân và truyền thông tin người dùng vào
+        res.render('profile', { title: 'Thông tin cá nhân', user });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+// Route để lấy thông tin người dùng từ userId
+router.get('/:userId', async function(req, res, next) {
+    try {
+        const userId = req.cookies.userId; 
+        // Truy vấn cơ sở dữ liệu để tìm người dùng với userId tương ứng
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+        
+        // Gửi thông tin người dùng về cho trình duyệt
+        res.json(user);
+    } catch (error) {
+        next(error);
+    }
+});
 
 module.exports = router;

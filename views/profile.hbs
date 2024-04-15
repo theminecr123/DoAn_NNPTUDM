@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Thông tin cá nhân</h1>
+    <form>
+        <div>
+            <label for="name">Tên:</label>
+            <input type="text" id="name" name="name" value="">
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="" >
+        </div>
+        <div>
+            <label for="phone">Số điện thoại:</label>
+            <input type="tel" id="phone" name="phone" value="" >
+        </div>
+        <div>
+            <label for="address">Địa chỉ:</label>
+            <input type="text" id="address" name="address" value="">
+        </div>
+    </form>
+    <a href="/">Trở về</a>
+
+    <script>
+        // Lấy userId từ cookie
+        const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*=\s*([^;]*).*$)|^.*$/, "$1");
+
+        // Nếu userIdCookie tồn tại, tức là người dùng đã đăng nhập
+        if (userIdCookie) {
+            // Fetch thông tin người dùng từ server
+            fetch('/users/' + userIdCookie)
+                .then(response => response.json())
+                .then(data => {
+                    // Đổ dữ liệu vào các trường input tương ứng
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('email').value = data.email;
+                    document.getElementById('phone').value = data.phone;
+                    document.getElementById('address').value = data.address;
+
+                    const userInfo = document.getElementById('user-info');
+                            userInfo.innerHTML = `<p>Xin chào ${data.name} (${data.email})</p>`;
+                })
+                .catch(error => console.error('Lỗi:', error));
+        } else {
+            // Nếu không có userIdCookie, không có người dùng đang đăng nhập, không cần làm gì cả
+            console.log("Không có người dùng đăng nhập");
+        }
+    </script>
+</body>
+</html>
