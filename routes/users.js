@@ -15,7 +15,8 @@ router.get('/', async function(req, res) {
 });
 
 router.get('/register', function(req, res) {
-    res.render('register', { title: 'Register' });
+    res.render('authentication/register', { title: 'Register',
+    layout: false });
 });
 
 router.post('/register', async function(req, res, next) {
@@ -56,7 +57,9 @@ router.post('/register', async function(req, res, next) {
 });
 
 router.get('/login', function(req, res) {
-    res.render('login', { title: 'Login' });
+    res.render('authentication/login', { 
+        title: 'Login',
+        layout: false });
 });
 
 router.post('/login', async function(req, res, next) {
@@ -78,6 +81,8 @@ router.post('/login', async function(req, res, next) {
         // Đăng nhập thành công
        // Lưu ID của người dùng vào cookie
        res.cookie('userId', user._id, { maxAge: 900000 });
+       res.cookie('userRole', user.role, { maxAge: 900000 });
+
        res.redirect('/');
     } catch (error) {
         next(error);
@@ -91,6 +96,10 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/profile', async function(req, res, next) {
+    if (!userId) {
+        res.redirect('/users/login');
+        return;
+    }
     try {
         const userId = req.cookies.userId;
         const user = await User.findById(userId);
@@ -100,7 +109,7 @@ router.get('/profile', async function(req, res, next) {
         }
         
         // Render trang thông tin cá nhân và truyền thông tin người dùng vào
-        res.render('profile', { title: 'Thông tin cá nhân', user });
+        res.render('authentication/profile', { title: 'Thông tin cá nhân', user });
     } catch (error) {
         next(error);
     }
@@ -110,6 +119,10 @@ router.get('/profile', async function(req, res, next) {
 
 // Route để lấy thông tin người dùng từ userId
 router.get('/:userId', async function(req, res, next) {
+    if (!userId) {
+        res.redirect('/users/login');
+        return;
+    }
     try {
         const userId = req.cookies.userId; 
         // Truy vấn cơ sở dữ liệu để tìm người dùng với userId tương ứng

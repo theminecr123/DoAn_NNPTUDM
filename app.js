@@ -3,8 +3,9 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-const  = require('express-handlebars');
+const hbs  = require('express-handlebars');
 const cookieParser = require('cookie-parser');
+const dateFormat = require('handlebars-dateformat');
 
 var app = express();
 
@@ -37,6 +38,8 @@ const handlebarsInstance = hbs.create({
     helpers: {
         range: range,
         ifEquals: ifEquals,
+        formatDate: dateFormat
+
 
     },
     defaultLayout: 'main',

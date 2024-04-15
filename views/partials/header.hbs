@@ -6,3 +6,113 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+       h1 {
+            text-align: center;
+       }
+       .user-info {
+            position: absolute;
+            top: 20px;
+            right: 100px; 
+       }
+       .logout-button,
+       .login-button {
+            margin-top: 20px;
+            position: absolute;
+            top: 50px; 
+            right: 100px;
+            display: none;
+       }
+        /* Navigation bar style */
+        nav {
+            background-color: #2c3e50; /* Dark blue color */
+            overflow: hidden;
+            padding: 10px 20px; /* Padding for spacing */
+        }
+
+        /* Navigation links */
+        nav a {
+            float: left; /* Align links to the left */
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px; /* Spacing for links */
+            text-decoration: none;
+            font-size: 18px; /* Increase font size */
+            font-weight: bold; /* Bold font weight */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+        }
+
+        /* Hover effect for navigation links */
+        nav a:hover {
+            background-color: #34495e; /* Darker shade for hover */
+            color: #ecf0f1; /* Lighter color */
+        }
+
+        /* Cart icon */
+        nav a.cart-icon {
+            padding: 10px; /* Adjust padding for cart icon */
+        }
+
+        /* Cart icon image style */
+        nav a.cart-icon img {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Products</a>
+        <!-- Cart icon link -->
+        <a href="/cart" class="cart-icon">
+            <img src="/path/to/cart-icon.png" alt="Cart Icon" style="width: 20px; height: 20px;">
+        </a>
+        <div class="user-info" id="user-info">
+        <!-- Thông tin người dùng sẽ được thêm vào đây -->
+    </div>
+        <button class="logout-button" id="logout-button">Đăng xuất</button>
+        <button class="login-button" id="login-button">Đăng nhập</button>
+    </nav>
+    
+    <script>
+        const userIdCookie = document.cookie.replace(/(?:(?:^|.*;\s*)userId\s*=\s*([^;]*).*$)|^.*$/, "$1");
+        
+        if (userIdCookie) {
+            const logoutButton = document.querySelector('.logout-button');
+            const loginButton = document.querySelector('.login-button');
+            logoutButton.style.display = 'block'; // Hiển thị nút đăng xuất
+            loginButton.style.display = 'none'; // Ẩn nút đăng nhập
+            // Fetch thông tin người dùng
+            fetch('/users/' + userIdCookie)
+                .then(response => response.json())
+                .then(data => {
+                    const userInfo = document.getElementById('user-info');
+                    userInfo.innerHTML = `<a href =/users/profile >Xin chào ${data.name} (${data.email})</a>`;
+                })
+                .catch(error => console.error('Lỗi:', error));
+        } else { // Ngược lại, người dùng chưa đăng nhập
+            const logoutButton = document.querySelector('.logout-button');
+            const loginButton = document.querySelector('.login-button');
+            logoutButton.style.display = 'none'; 
+            loginButton.style.display = 'block'; 
+        }
+
+        document.getElementById('logout-button').addEventListener('click', function() {
+            fetch('/users/logout')
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(error => console.error('Lỗi:', error));
+        });
+
+        document.getElementById('login-button').addEventListener('click', function() {
+            window.location.href = '/users/login';
+        });
+    </script>
+</body>

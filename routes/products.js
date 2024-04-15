@@ -22,50 +22,45 @@ var upload = multer({ storage: storage });
 
 const productsPerPage = 10; // 2 rows * 5 products per row
 
-router.get('/', async function(req, res, next) {
-  const user = req.session.user;
-
+router.get('/', async function (req, res, next) {
+    // Get user role from cookies
+    const userRole = req.cookies.userRole || null;
+  
     // Query handling for filtering
     const queries = {};
     const arrayExclude = ['limit', 'sort', 'page'];
-
+  
     for (const [key, value] of Object.entries(req.query)) {
-        if (!arrayExclude.includes(key)) {
-            queries[key] = new RegExp(value, 'i');
-        }
+      if (!arrayExclude.includes(key)) {
+        queries[key] = new RegExp(value, 'i');
+      }
     }
     queries.isDelete = false;
-
+  
     // Pagination
-    const currentPage = parseInt(req.query.page) || 1; // Current page from query parameters, default to 1
-    const skip = (currentPage - 1) * productsPerPage; // Calculate the number of products to skip
-    const totalProducts = await productModel.countDocuments(queries); // Total products matching the query
-    const totalPages = Math.ceil(totalProducts / productsPerPage); // Calculate total number of pages
-
+    const currentPage = parseInt(req.query.page) || 1;
+    const skip = (currentPage - 1) * productsPerPage;
+    const totalProducts = await productModel.countDocuments(queries);
+    const totalPages = Math.ceil(totalProducts / productsPerPage);
+  
     // Retrieve products for the current page
     const products = await productModel.find(queries)
-        .populate({ path: 'category', select: 'name' })
-        .skip(skip)
-        .limit(productsPerPage)
-        .lean();
-
-    // JSON response or render Handlebars view
-    const acceptHeader = req.headers['accept'];
-    if (acceptHeader && acceptHeader.includes('application/json')) {
-        // Return JSON response
-        res.json(products);
-    } else {
-        // Render the Handlebars view with products, pagination data, and title
-        res.render('product/product', {
-            title: 'Ricie | Products',
-            products: products,
-            currentPage: currentPage,
-            totalPages: totalPages,
-            prevPage: currentPage > 1 ? currentPage - 1 : null,
-            nextPage: currentPage < totalPages ? currentPage + 1 : null
-        });
-    }
-});
+      .populate({ path: 'category', select: 'name' })
+      .skip(skip)
+      .limit(productsPerPage)
+      .lean();
+  
+    // Render the Handlebars view with products, pagination data, user role, and title
+    res.render('product/product', {
+      title: 'Ricie | Products',
+      products: products,
+      currentPage: currentPage,
+      totalPages: totalPages,
+      prevPage: currentPage > 1 ? currentPage - 1 : null,
+      nextPage: currentPage < totalPages ? currentPage + 1 : null,
+      userRole: userRole // Pass userRole to the view
+    });
+  });
 
 
 router.get('/add', async function(req, res) {

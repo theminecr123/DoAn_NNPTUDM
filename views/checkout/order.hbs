@@ -9,7 +9,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
-
     <!-- Add custom styles -->
     <style>
         body {
@@ -82,11 +81,11 @@
         </thead>
         <tbody>
             {{#each cart}}
-            <tr>
+            <tr data-product="{{@index}}">
                 <td>{{name}}</td>
-                <td>${{price}}</td>
-                <td>{{quantity}}</td>
-                <td>${{totalPrice}}</td>
+                <td class="price">${{price}}</td>
+                <td class="quantity">{{quantity}}</td>
+                <td class="total"></td>
             </tr>
             {{/each}}
         </tbody>
@@ -96,6 +95,22 @@
 
     <script>
         $(document).ready(function() {
+            // Calculate total price for each product
+            function calculateTotalPrice() {
+                $('#order-table tbody tr').each(function() {
+                    const row = $(this);
+                    const price = parseFloat(row.find('.price').text().replace('$', ''));
+                    const quantity = parseInt(row.find('.quantity').text());
+                    const totalPrice = price * quantity;
+
+                    // Display the total price in the total column
+                    row.find('.total').text(`$${totalPrice.toFixed(2)}`);
+                });
+            }
+
+            // Initialize the total price calculation
+            calculateTotalPrice();
+
             // Initialize DataTable
             $('#order-table').DataTable();
 

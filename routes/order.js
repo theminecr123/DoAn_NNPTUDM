@@ -37,9 +37,11 @@ router.get('/', async function(req, res) {
 });
 
 router.post('/confirm', async function(req, res) {
+    const userId = req.cookies.userId;
     try {
-        // Retrieve cart from cookies
+        // Retrieve cart and userId from cookies
         const cart = req.cookies.cart || {};
+        
 
         // Calculate the total amount
         let total = 0;
@@ -59,10 +61,11 @@ router.post('/confirm', async function(req, res) {
             }
         }
 
-        // Create a new order
+        // Create a new order with the userId
         const newOrder = new OrderModel({
             total: total,
             dateCreated: new Date(),
+            idUser: userId.id, // Add userId to the new order
         });
         const savedOrder = await newOrder.save();
 
@@ -91,6 +94,7 @@ router.post('/confirm', async function(req, res) {
 
 
 
+
 router.get('/success', function(req, res) {
     // Render the success page
     res.render('checkout/order_success');
@@ -102,7 +106,7 @@ router.get('/details/:orderId', async function(req, res) {
     try {
         // Fetch order details for the given order ID
         const orderDetails = await OrderDetailModel.find({ idOrder: orderId }).populate('idProduct').lean();
-
+        
         // Check the Accept header and respond with appropriate data
         if (req.headers.accept && req.headers.accept.includes('application/json')) {
             res.json({
@@ -110,10 +114,32 @@ router.get('/details/:orderId', async function(req, res) {
                 orderDetails: orderDetails,
             });
         } else {
-            res.render('checkout/order_details', { orderDetails: orderDetails });
+            res.render('checkout/order_details', { orderDetails });
         }
     } catch (error) {
         console.error('Error fetching order details:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+router.get('/history', async function(req, res) {
+    // Get userId from the cookie
+    const userId = req.cookies.userId;
+
+    // If userId is not found, redirect to the login page or show an error message
+    if (!userId) {
+        res.redirect('/users/login');
+        return;
+    }
+
+    try {
+        // Find all orders for the current user
+        const userOrders = await OrderModel.find({ idUser: userId }).lean();
+
+        // Render the order history template with the user's orders
+        res.render('checkout/order_history', { orders: userOrders });
+    } catch (error) {
+        console.error('Error fetching order history:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 });

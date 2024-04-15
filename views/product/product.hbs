@@ -118,9 +118,12 @@
     <h1>Welcome to E-commerce Store</h1>
     <h2>Products:</h2>
 
+    {{#ifEquals userRole "admin"}}
     <button onclick="window.location.href='/products/add';" style="margin-bottom: 20px; padding: 8px 12px; border-radius: 5px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
         Add New Product
     </button>
+    {{/ifEquals}}
+<p>User Role: {{userRole}}</p>
 
     <div class="products-container">
         {{#each products}}
@@ -131,24 +134,24 @@
                 </a>
                 <div class="product-name">{{ name }}</div>
                 <div class="product-price">{{ price }}</div>
+
+                {{#ifEquals ../userRole "admin"}}
+                    <div class="product-actions">
+                        <!-- Update and Delete buttons -->
+                        <button onclick="window.location.href='/products/edit/{{_id}}';" class="update-btn">Update</button>
+                        <button onclick="confirmDelete('{{_id}}')" class="delete-btn">Delete</button>
+                    </div>
+                {{/ifEquals}}
+
+
+               
+                <!-- Add to Cart form for users -->
                 <form method="POST" action="/cart/add">
                     <input type="hidden" name="itemId" value="{{ _id }}">
                     <input type="hidden" name="quantity" value="1">
                     <button type="submit" class="add-to-cart-btn">Add to Cart</button>
                 </form>
 
-                <!-- Add buttons for Update and Delete -->
-                <div class="product-actions">
-                    <!-- Update button -->
-                    <button onclick="window.location.href='/products/edit/{{_id}}';" class="update-btn" style="margin-top: 10px; padding: 5px 10px; border-radius: 5px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
-                        Update
-                    </button>
-
-                    <!-- Delete button -->
-                    <button onclick="confirmDelete('{{_id}}')" class="delete-btn" style="margin-top: 10px; padding: 5px 10px; border-radius: 5px; background-color: #FF0000; color: white; border: none; cursor: pointer;">
-                        Delete
-                    </button>
-                </div>
             </div>
         {{/each}}
     </div>

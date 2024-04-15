@@ -1,0 +1,66 @@
+<h2>Order Details</h2>
+{{#if orderDetails.length}}
+    <div class="order-details-container">
+        <ul class="order-details-list">
+            {{#each orderDetails}}
+                <li class="order-details-item">
+                    <div class="product-info">
+                        <img class="product-image" src="/{{this.idProduct.thumbnail}}" alt="{{this.idProduct.name}}">
+                        <div class="product-details">
+                            <p class="product-name"><strong>Product Name:</strong> {{this.idProduct.name}}</p>
+                            <p class="product-quantity"><strong>Quantity:</strong> {{this.quantity}}</p>
+                            <p class="product-price"><strong>Price:</strong> ${{this.idProduct.price}}</p>
+                        </div>
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+{{else}}
+    <p>No order details found.</p>
+{{/if}}
+
+<style>
+    .order-details-container {
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-details-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order-details-item {
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 20px;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+    }
+
+    .product-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 20px;
+    }
+
+    .product-details {
+        flex: 1;
+    }
+
+    .product-name, .product-quantity, .product-price {
+        margin: 5px 0;
+    }
+
+    .product-name strong, .product-quantity strong, .product-price strong {
+        color: #333;
+    }
+</style>
