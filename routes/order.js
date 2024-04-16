@@ -65,7 +65,7 @@ router.post('/confirm', async function(req, res) {
         const newOrder = new OrderModel({
             total: total,
             dateCreated: new Date(),
-            idUser: userId.id, // Add userId to the new order
+            idUser: userId, // Add userId to the new order
         });
         const savedOrder = await newOrder.save();
 
