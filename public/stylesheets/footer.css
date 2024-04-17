@@ -22,26 +22,26 @@ footer div {
 svg {
   width:100%;
 }
-.arrow {
+/* .arrow {
   stroke-width: .3px;
   stroke:yellow;
-}
-.topball {
+} */
+/* .topball {
   animation: ball 1.5s ease-in-out;
   animation-iteration-count:infinite;
   animation-direction: alternate;
   animation-delay: 0.3s;
   cursor:pointer;
-}
+} */
 
 .wave {
-  animation: wave 3s linear;
-  animation-iteration-count:infinite;
+  /* animation: wave 3s linear;
+  animation-iteration-count:infinite; */
   fill: #4478e3;
 }
 .drop {
   fill: transparent;
-  animation: drop 5s ease infinite normal;
+  /* animation: drop 5s ease infinite normal; */
   stroke: #4478e3;
   stroke-width:0.5;
   opacity:.6; 
