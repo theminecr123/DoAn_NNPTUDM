@@ -270,7 +270,6 @@ button:active {
 }
 
 
->>>>>>> main
     </style>
 </head>
 
@@ -298,18 +297,7 @@ button:active {
                     <button class="remove-btn" data-item-id="{{id}}">Remove</button>
                  </div>
             </div>
-=======
-            <li style="margin-top:20px;" class="cart-item-card" data-item-id="{{id}}">
-                <img src="{{image}}" alt="{{name}}">
-                <div>{{name}}</div>
-                <div class="price">${{price}}</div>
-                <input type="number" min="1" value="{{quantity}}" class="quantity-input" data-item-id="{{id}}">
-                <div class="total">${{totalPrice}}</div>
-                <button class="remove-btn" data-item-id="{{id}}">
-                    <span class="text">Remove</span>
-                    <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"></path></svg></span>
-                </button>
-            </li>
+
         {{/each}}
     </ol>
 </div>
@@ -335,6 +323,8 @@ button:active {
 </a>
 
     <script>
+        
+
         document.addEventListener('DOMContentLoaded', function() {
             // Calculate total for each cart item
             function calculateItemTotalPrice() {
@@ -343,9 +333,14 @@ button:active {
                     const quantity = parseInt(input.value);
                     const totalPrice = price * quantity;
                     const itemCard = input.closest('.cart-item-card');
-                    itemCard.querySelector('.total').textContent = `$${totalPrice.toFixed(2)}`;
+                    const formatter = new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND'
+                    });
+                    itemCard.querySelector('.total').textContent = formatter.format(totalPrice);
                 });
             }
+
 
             // Update totals and grand total
             function updateTotals() {
@@ -355,9 +350,17 @@ button:active {
                     success: function(response) {
                         response.items.forEach(item => {
                             const itemCard = document.querySelector(`.cart-item-card[data-item-id='${item.id}']`);
-                            itemCard.querySelector('.total').textContent = `$${item.totalPrice.toFixed(2)}`;
+                            const formatter = new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND'
+                            });
+                            itemCard.querySelector('.total').textContent = formatter.format(item.totalPrice);
                         });
-                        document.getElementById('grand-total').textContent = `Grand Total: $${response.grandTotal.toFixed(2)}`;
+                        const formatter = new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND'
+                        });
+                        document.getElementById('grand-total').textContent = `Grand Total: ${formatter.format(response.grandTotal)}`;
                         // Hide the checkout button if the cart is empty
                         const checkoutButton = document.getElementById('checkout-button');
                         if (response.grandTotal <= 0) {
@@ -371,6 +374,7 @@ button:active {
                     }
                 });
             }
+
 
             // Event listener for quantity input change
             document.querySelectorAll('.quantity-input').forEach(input => {
@@ -423,6 +427,17 @@ button:active {
             // Initial calculations and totals update
             calculateItemTotalPrice();
             updateTotals();
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            const productPrices = document.querySelectorAll(".price");
+            productPrices.forEach(function(element) {
+                const price = parseInt(element.textContent);
+                const formatter = new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                });
+                element.textContent = formatter.format(price);
+            });
         });
     </script>
 </body>
