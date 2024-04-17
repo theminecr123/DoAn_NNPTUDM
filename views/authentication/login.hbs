@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://e7.pngegg.com/pngimages/315/183/png-clipart-rice-paddy-field-icon-golden-rice-golden-frame-food-thumbnail.png" type="image/x-icon">
+    <link rel="stylesheet" href="/stylesheets/style.css">
     <title>Login</title>
     <style>
         form {
@@ -10,9 +12,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 30vh;
+            height: 40vh;
             border-radius: 15px; /* Bo tròn viền cho form */
-            border: 2px solid #ccc; /* Đặt đường viền cho form */
+            border: 2px dashed #000000; /* Đặt đường viền cho form */
             padding: 20px; /* Thêm khoảng cách giữa nội dung và viền form */
             max-width: 400px;
             margin: auto;
@@ -30,6 +32,8 @@
             border-radius: 10px; /* Bo tròn viền cho ô nhập và nút */
             font-size: 20px; /* Chữ to lên */
             padding: 10px; /* Thêm khoảng cách giữa nội dung và viền */
+            border: 2px dashed black;
+            background-color: transparent;
         }
 
         .error-message {
@@ -42,7 +46,9 @@
     <form id="loginForm" action="/users/login" method="POST">
         <input type="email" name="email" placeholder="Email" required><br>
         <input type="password" name="password" placeholder="Password" required><br>
-        <button type="submit">Login</button>
+        <button class="button_login" type="submit">
+            <span>Login</span>
+            </button>
         <p class="error-message" id="loginError"></p>
     </form>
      <div class="register-link">

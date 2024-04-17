@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/stylesheets/footer.css">
+
+    <title>Document</title>
+</head>
+<body>
+    <footer style="margin-top:100px;">
+<svg viewBox="0 0 120 28">
+ <defs> 
+   <mask id="xxx">
+     <circle cx="7" cy="12" r="40" fill="#fff" />
+   </mask>
+   
+   <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+      <feColorMatrix in="blur" mode="matrix" values="
+           1 0 0 0 0  
+           0 1 0 0 0  
+           0 0 1 0 0  
+           0 0 0 13 -9" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+  	</filter>
+     <path id="wave" d="M 0,10 C 30,10 30,15 60,15 90,15 90,10 120,10 150,10 150,15 180,15 210,15 210,10 240,10 v 28 h -240 z" />
+  </defs> 
+
+   <use id="wave3" class="wave" xlink:href="#wave" x="0" y="-2" ></use> 
+   <use id="wave2" class="wave" xlink:href="#wave" x="0" y="0" ></use>
+ 
+  <g class="topball">
+    <a href="#ontop">
+  <circle class="ball" cx="110" cy="8" r="4" stroke="none" stroke-width="0" fill="red" />
+</a>
+    <g class="arrow">
+    <polyline class="" points="108,8 110,6 112,8" fill="none"  />
+    <polyline class="" points="110,6 110,10.5" fill="none"  />
+    </g>
+    
+  </g>
+  <g class="gooeff">
+  <circle class="drop drop1" cx="20" cy="2" r="1.8"  />
+  <circle class="drop drop2" cx="25" cy="2.5" r="1.5"  />
+  <circle class="drop drop3" cx="16" cy="2.8" r="1.2"  />
+    <use id="wave1" class="wave" xlink:href="#wave" x="0" y="1" />
+  
+    <!-- g mask="url(#xxx)">
+    <path   id="wave1"  class="wave" d="M 0,10 C 30,10 30,15 60,15 90,15 90,10 120,10 150,10 150,15 180,15 210,15 210,10 240,10 v 28 h -240 z" />
+    </g>
+  </g -->
+
+</svg>
+<div style="position:absolute;top:-50px;background-color:transparent; margin-left:600px;margin-top:260px">
+    <img style="width:60px" src="https://seeklogo.com/images/F/facebook-icon-black-logo-133935095E-seeklogo.com.png"/>
+    <img style="width:60px;padding-left:50px" src="https://i.pinimg.com/originals/86/32/54/863254f8c36146219554977cc345d584.png"/>
+    <img style="width:60px;padding-left:50px" src="https://www.shareicon.net/data/512x512/2015/11/27/678836_logo_512x512.png"/>
+    <img style="width:60px;padding-left:50px" src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/black-instagram-icon.png"/>
+</div>
+<div style="position:absolute;top:-50px;background-color:transparent;">
+    <img style="width:60px;margin-top:350px;" src="/stylesheets/icon_lua.png"/><span style="font-size:60px;font-weight:bold;">RICIE</span>
+<p style="margin-left:60px;text-align: left;">RICIE là nơi buôn bán mặt hàng là gạo.</br> bên RICIE có rất nhiều loại gạo khác nhau</br> các loại trong nước và loại nhập an toàn</br> chất lượng uy tín tạo nên thương hiệu RICIE.</p>
+</div>
+
+<div style="position:absolute;background-color:transparent;margin-left:500px;">
+<span style="font-size:28px;">Account</span>
+<a style="display: block;color:white;text-decoration: none;" href="/users/register">Đăng Ký</a>
+<a style="display: block;color:white;text-decoration: none;" href="/users/login">Đăng Nhập</a>
+</div>
+
+<div style="position:absolute;background-color:transparent;margin-left:900px;">
+<span style="font-size:28px;">Page</span>
+<a style="display: block;color:white;text-decoration: none;" href="">Home</a>
+<a style="display: block;color:white;text-decoration: none;" href="/products">Product</a>
+<a style="display: block;color:white;text-decoration: none;" href="/cart">Cart</a>
+
+</div>
+
+<div style="position:absolute;background-color:transparent;margin-left:1300px;">
+<span style="font-size:28px;">Account</span>
+<a style="display: block;color:white;text-decoration: none;" href="/users/register">Đăng Ký</a>
+<a style="display: block;color:white;text-decoration: none;" href="/users/login">Đăng Nhập</a>
+</div>
+
+<div style="margin-left:-800px;">
+    <img style="width:150px;margin-top:200px;" src="/stylesheets/location.gif"/>
+    <p id="footer_info" style="margin-top:23px">123 Đường 3/2 Phường 10 Quận 11</p>
+</div>
+<div>
+    <img style="width:150px;margin-top:100px;padding-left:150px;" src="https://cokhidangthao.com/wp-content/uploads/2022/06/phone-icon-20200331115049.gif"/>
+<p id="footer_info" style="margin-top:-10px;margin-left:1000px;">ricie@gmail.com</p>
+</div>
+<div>
+    <img style="width:120px;margin-top:25px;margin-left:1000px;" src="https://gifdb.com/images/high/email-icon-notification-cx5j6sw64pod96cr.gif"/>
+<p id="footer_info" style="margin-left:150px;">093 111 1111</p>
+</div>
+
+  <div></div>
+  <div></div>
+</footer>
+<style>
+    #footer_info{
+        font-size:18px;
+    }
+</style>
+</body>
+</html>
