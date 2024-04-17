@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Products</title>
-    <link rel="stylesheet" href="/path/to/your/css/styles.css">
+    <link rel="stylesheet" href="/stylesheets/footer.css">
+
     <style>
        
         body {
@@ -14,6 +15,7 @@
             background-position: center;
             background-size: cover;
             opacity: 0.9; /* Điều chỉnh độ mờ cho độ trong suốt mong muốn */
+            margin: 0;
         }
 
         h1, h2 {
@@ -218,15 +220,15 @@
 </head>
 
 <body>
-    <h1>Welcome to E-commerce Store</h1>
+    <h1>Welcome to RICIE Store</h1>
     {{#ifEquals userRole "admin"}}
         <button onclick="window.location.href='/products/add';" class="add-product-btn">Add New Product</button>
         <span class="user-role">User Role: {{userRole}}</span>
     {{/ifEquals}}
     
-     <a href="/cart" class="view-cart-link">
+     {{!-- <a href="/cart" class="view-cart-link">
         <img src="https://i.imgur.com/HUMltyj.png" alt="View Cart">
-    </a>
+    </a> --}}
     <div class="products-container">
         {{#each products}}
             <div class="product-card">
