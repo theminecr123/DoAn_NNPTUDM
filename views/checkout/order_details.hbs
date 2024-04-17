@@ -1,4 +1,4 @@
-<h2>Order Details</h2>
+<h2 style="text-align: center;">Order Details</h2>
 {{#if orderDetails.length}}
     <div class="order-details-container">
         <ul class="order-details-list">
@@ -22,6 +22,8 @@
 
 <style>
     .order-details-container {
+        width: 35%; /* Set the width of the container */
+        margin: 0 auto; /* Center the container horizontally */
         padding: 20px;
         background-color: #f9f9f9;
         border-radius: 8px;
@@ -34,7 +36,7 @@
     }
 
     .order-details-item {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         border-bottom: 1px solid #e0e0e0;
         padding-bottom: 20px;
     }

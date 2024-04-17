@@ -6,35 +6,68 @@
     <title>Products</title>
     <link rel="stylesheet" href="/path/to/your/css/styles.css">
     <style>
-        /* Add your custom styles here */
+       
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
+            background-image: url("https://i.imgur.com/3cepkLf.png");
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            opacity: 0.9; /* Điều chỉnh độ mờ cho độ trong suốt mong muốn */
         }
 
         h1, h2 {
             text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .user-role {
+            position: absolute;
+            top: 20px; /* Điều chỉnh khoảng cách từ trên xuống */
+            right: 20px; /* Điều chỉnh khoảng cách từ phải sang trái */
+            font-size: 16px;
+            font-weight: bold;
+           
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+        }
+
+        .add-product-btn {
+            position: absolute;
+            top: 100px; /* Điều chỉnh khoảng cách từ trên xuống */
+            right: 40px; /* Điều chỉnh khoảng cách từ phải sang trái */
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
         }
 
         .products-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+            gap: 30px;
             justify-content: center;
             margin: 0 auto;
         }
 
         .product-card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            width: 100%;
+            border: 3px solid #0f9916;
+            border-radius: 18px;
+            padding: 6px;
+            width: 250px;
             text-align: center;
             height: 350px; /* Adjust as needed for consistent card height */
             display: flex;
             flex-direction: column;
             justify-content: space-between; /* Space out content evenly */
+            transition: transform 0.3s ease; 
+        }
+         .product-card:hover {
+            transform: scale(1.05); /* Phóng to lên 1.05 khi hover */
         }
 
         .product-image {
@@ -42,21 +75,19 @@
             height: 200px; /* Fixed height for images */
             object-fit: cover; /* Ensures images fit within the fixed height */
             border-radius: 5px;
-            margin-bottom: 10px; /* Add some space between image and text */
+            margin-bottom: 3px; /* Add some space between image and text */
         }
 
         .product-name {
-            margin: 10px 0;
+           
             font-size: 16px;
             font-weight: bold;
-            overflow: hidden; /* Prevent text overflow */
-            text-overflow: ellipsis; /* Truncate text with ellipsis */
-            white-space: nowrap; /* Keep text in a single line */
+            text-align: center;
         }
 
         .product-price {
             margin: 5px 0;
-            font-size: 14px;
+            font-size: 16px;
             color: green;
         }
 
@@ -72,19 +103,90 @@
         .add-to-cart-btn:hover {
             background-color: #45a049;
         }
-
-        /* Style for the "View Cart" link */
         .view-cart-link {
-            display: block;
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            text-decoration: none;
-            color: #007BFF;
+            float: right;
+            margin-top: -60px;
+            margin-right: 120px;
         }
 
-        .view-cart-link:hover {
-            text-decoration: underline;
+        .view-cart-link img {
+            width: 50px;
+            height: auto;
+        }
+
+        .delete-btn,
+        .update-btn {
+            align-items: center;
+            background-clip: padding-box;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+            box-sizing: border-box;
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 10px;
+            font-weight: 200;
+            justify-content: center;
+            line-height: 1.25;
+            margin: 0;
+            min-height:2rem;
+            min-width: 4rem; 
+            position: relative;
+            text-decoration: none;
+            transition: all 250ms;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            vertical-align: baseline;
+            width: auto;
+        }
+
+        .delete-btn:hover,
+        .delete-btn:focus,
+        .update-btn:hover,
+        .update-btn:focus {
+            box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+        }
+
+        .delete-btn:hover,
+        .update-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .delete-btn:active,
+        .update-btn:active {
+            box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
+            transform: translateY(0);
+        }
+
+        /* CSS riêng cho nút delete */
+        .delete-btn {
+            background-color: #c30c0c;
+        }
+
+        .delete-btn:hover,
+        .delete-btn:focus {
+            background-color: #ff1d1d;
+        }
+
+        .delete-btn:active {
+            background-color: #c85000;
+        }
+
+        /* CSS riêng cho nút update */
+        .update-btn {
+            background-color: #1865b8;
+        }
+
+        .update-btn:hover,
+        .update-btn:focus {
+            background-color: #2e8df4;
+        }
+
+        .update-btn:active {
+            background-color: #0056b3;
         }
 
         /* Pagination controls */
@@ -111,20 +213,20 @@
             background-color: #007BFF;
             color: white;
         }
+   
     </style>
 </head>
 
 <body>
     <h1>Welcome to E-commerce Store</h1>
-    <h2>Products:</h2>
-
     {{#ifEquals userRole "admin"}}
-    <button onclick="window.location.href='/products/add';" style="margin-bottom: 20px; padding: 8px 12px; border-radius: 5px; background-color: #007BFF; color: white; border: none; cursor: pointer;">
-        Add New Product
-    </button>
+        <button onclick="window.location.href='/products/add';" class="add-product-btn">Add New Product</button>
+        <span class="user-role">User Role: {{userRole}}</span>
     {{/ifEquals}}
-<p>User Role: {{userRole}}</p>
-
+    
+     <a href="/cart" class="view-cart-link">
+        <img src="https://i.imgur.com/HUMltyj.png" alt="View Cart">
+    </a>
     <div class="products-container">
         {{#each products}}
             <div class="product-card">
@@ -143,8 +245,6 @@
                     </div>
                 {{/ifEquals}}
 
-
-               
                 <!-- Add to Cart form for users -->
                 <form method="POST" action="/cart/add">
                     <input type="hidden" name="itemId" value="{{ _id }}">
@@ -156,7 +256,8 @@
         {{/each}}
     </div>
 
-    <a href="/cart" class="view-cart-link">View Cart</a>
+    
+
 
     <!-- Pagination Controls -->
     <div class="pagination">
@@ -194,4 +295,17 @@
             });
         }
     }
+
+   document.addEventListener("DOMContentLoaded", function() {
+    const productPrices = document.querySelectorAll(".product-price");
+    productPrices.forEach(function(element) {
+        const price = parseInt(element.textContent);
+        const formatter = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        });
+        element.textContent = formatter.format(price);
+    });
+});
+
 </script>

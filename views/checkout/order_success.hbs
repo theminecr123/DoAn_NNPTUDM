@@ -50,6 +50,13 @@
         .btn:hover {
             background-color: #0056b3; /* Darker blue */
         }
+        .btn-history {
+            background-color: #ffc107; /* Bootstrap warning color */
+        }
+
+        .btn-history:hover {
+            background-color: #ff9800; /* Darker orange */
+        }
     </style>
 </head>
 
@@ -62,7 +69,7 @@
             <a href="/products" class="btn">Continue Shopping</a> <!-- Button to continue shopping -->
             <a href="/" class="btn">Go to Homepage</a> <!-- Button to go back to the homepage -->
         </div>
-        <button onclick="window.location.href='/order/history'">View Order History</button>
+        <button class="btn btn-history" onclick="window.location.href='/order/history'">View Order History</button>
 
     </div>
 </body>

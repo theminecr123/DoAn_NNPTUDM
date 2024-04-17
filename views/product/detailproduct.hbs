@@ -6,7 +6,6 @@
     <title>{{product.name}} - Product Detail</title>
     <link rel="stylesheet" href="/path/to/your/css/styles.css">
     <style>
-        /* Add your custom styles here */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,28 +15,43 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
+            margin-top: 60px;
             padding: 20px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .left-section {
+            flex: 1; /* Phần này chiếm 1/2 không gian */
+            padding-right: 20px;
+            display: flex;
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: center; 
+        }
+
+        /* Styling for the right section */
+        .right-section {
+            flex: 1; /* Phần này chiếm 1/2 không gian */
+            padding-left: 20px;
         }
 
         /* Styling for the product image */
         img {
             max-width: 100%;
-            height: 300px; /* Set a fixed height for the image */
-            object-fit: cover; /* Maintain aspect ratio */
+            height: 400px; 
+           
             border-radius: 5px;
-            margin-bottom: 20px; /* Add some space between image and text */
+            margin-bottom: 20px;
         }
 
-        /* Styling for headings */
-        h1, h2, p {
-            margin-bottom: 10px;
+        h1 {
+            text-align: left;
         }
 
         /* Styling for buttons */
         .add-to-cart-btn, .back-button {
-            background-color: #007BFF;
+            background-color: #2f9c23;
             color: white;
             padding: 10px;
             border: none;
@@ -45,10 +59,21 @@
             cursor: pointer;
             text-align: center;
             text-decoration: none;
+            display: block;
+            width: 100%;
+            margin: 0 auto; /* Center the button horizontally */
+        }
+        .back-button{
+            margin-top: 30px;
+            width: 10%;
+            background-color: #192d8a;
         }
 
         .add-to-cart-btn:hover, .back-button:hover {
-            background-color: #0056b3;
+            background-color: #0fb300;
+        }
+        .back-button:hover {
+            background-color: #2f5cf0;
         }
 
         /* Styling for product information */
@@ -59,32 +84,39 @@
 </head>
 
 <body>
-    <a href="/products" class="back-button" style="margin-bottom: 20px;">Back to Products</a>
-
     <div class="container">
-        <!-- Product name as heading -->
-        <h1>{{product.name}}</h1>
-
-        <!-- Display product thumbnail if it exists -->
-        {{#if product.thumbnail}}
-            <img src="/{{product.thumbnail}}" alt="{{product.name}}">
-        {{/if}}
-
-        <!-- Product details -->
-        <div class="product-info">
-            <h2>Price: ${{product.price}}</h2>
-            <p>Quantity: {{product.quantity}}</p>
-            <p>Description: {{product.description}}</p>
-            <p>Category: {{product.category.name}}</p>
+        <div class="left-section">
+            {{#if product.thumbnail}}
+                <img src="/{{product.thumbnail}}" alt="{{product.name}}">
+            {{/if}}
         </div>
 
-        <!-- Add to Cart button -->
-        <form method="POST" action="/cart/add">
-            <input type="hidden" name="itemId" value="{{product._id}}">
-            <input type="hidden" name="quantity" value="1">
-            <button type="submit" class="add-to-cart-btn">Add to Cart</button>
-        </form>
-    </div>
-</body>
+         <div class="right-section">
+            <!-- Product details -->
+            <h1>{{product.name}}</h1>
+            <div class="product-info">
+                 <h2>Price: <span id="formattedPrice"></span></h2>
+                <p>Quantity: {{product.quantity}}</p>
+                <p style="text-align:justify;">Description: {{product.description}}</p>
+                <p>Category: {{product.category.name}}</p>
+            </div>
 
+            <!-- Add to Cart button -->
+            <form method="POST" action="/cart/add">
+                <input type="hidden" name="itemId" value="{{product._id}}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="add-to-cart-btn">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+     <a href="/products" class="back-button" style="margin-bottom: 20px;">Back to Products</a>
+      <script>
+         // Format price using JavaScript
+         document.addEventListener('DOMContentLoaded', function() {
+             var price = {{product.price}};
+             var formattedPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+             document.getElementById('formattedPrice').innerText = formattedPrice;
+         });
+     </script>
+</body>
 </html>
