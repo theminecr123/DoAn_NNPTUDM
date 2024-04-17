@@ -1,27 +1,48 @@
 <head>
     <style>
         /* Styles for the order history page */
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+        }
+
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 50px;
+            color: #faa526; 
+            font-size: 40px;
         }
         ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            max-width: 600px;
+            max-width: 300px;
             margin: 0 auto;
         }
         li {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
+           border: 1px solid #007bff; 
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
         }
         li span {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .view-details-btn {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .view-details-btn:hover {
+            background-color: #0056b3; /* Darker blue */
         }
     </style>
 </head>
@@ -33,8 +54,7 @@
                 <li>
                     <span>Total: ${{this.total}}</span>
                     <span>Date: {{formatDate this.dateCreated "HH:mm DD/MM/YYYY"}}</span>
-                    <button onclick="window.location.href='/order/details/{{this._id}}'">View Order Details</button>
-
+                    <button class="view-details-btn" onclick="window.location.href='/order/details/{{this._id}}'">View Order Details</button>
                 </li>
             {{/each}}
         </ul>
